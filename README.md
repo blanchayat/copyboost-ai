@@ -8,7 +8,7 @@ The app runs entirely in your browser and supports:
 - **AI-optimized output**: Get a clearer, more persuasive version.
 - **Tone and focus controls**: Choose tone (friendly, luxury, etc.) and SEO vs. conversion emphasis.
 - **Copy button**: Copy the optimized description to your clipboard in one click.
-- **Optional real AI API**: Plug in your **Claude (Anthropic)** API key (and optionally override endpoint/model), or use the built-in local rewrite as a fallback.
+- **Optional real AI API**: Uses a server-side Anthropic proxy (Vercel serverless or local Express), with a built-in local rewrite as fallback.
 
 ## Getting started
 
@@ -19,7 +19,7 @@ You can run the app in two ways:
 1. From this project folder, open `index.html` in any modern browser (Chrome, Edge, Firefox, Safari).
 2. Start using the tool—no build step or dependencies required.
 
-### 2. Run with a local proxy server (recommended)
+### 2. Run with a local proxy server (optional)
 
 If you have Node.js installed:
 
@@ -41,12 +41,8 @@ Then, either:
 By default, the app uses a **local rule-based rewrite** so it works without any external API.  
 To use a real AI model:
 
-1. Paste your **Claude API key** into the **“Claude API key”** field near the top.
-2. Click **“Save locally”** (stores to your browser’s `localStorage`).
-3. (Optional) In **“Advanced API settings”**, confirm:
-   - **Endpoint URL**: `http://localhost:4000/anthropic` (local proxy)
-   - **Model**: `claude-sonnet-4-5`
-4. Click **“Optimize with AI”**.
+1. Set `ANTHROPIC_API_KEY` in `.env` for local, or in Vercel project environment variables for production.
+2. The frontend calls `/api/anthropic` (Vercel serverless function). For local development, you can run `npm run server` and the frontend can still use the local rewrite fallback if the API isn’t available.
 
 > ⚠️ **Security note**: API keys used in the browser are exposed to anyone with access to that browser or dev tools. For production use, you should proxy requests through your own backend so keys are never exposed client-side.
 

@@ -173,7 +173,7 @@ function userPrompt(rawText, platform, language) {
 
 async function optimizeWithAnthropic(rawText, tone, focus, platform, language, endpoint, apiKey, model) {
   // Always use local proxy; do not call Anthropic directly from the browser
-  const url = "http://localhost:4000/anthropic";
+  const url = "/api/anthropic";
 
   const system = systemPrompt(tone, focus)
     .replace("{platform}", platform || "generic product page")
@@ -303,31 +303,26 @@ async function handleOptimizeClick() {
   const platform = platformEl ? platformEl.value : "generic";
   const language = languageEl ? languageEl.value : "en";
 
-  const endpoint = apiEndpointEl.value.trim();
-  const model = apiModelEl ? apiModelEl.value.trim() : "";
-  const apiKey = apiKeyEl.value.trim();
-
   setLoading(true);
   outputEl.value = "";
 
   try {
-    let optimized = await optimizeWithAnthropic(
-        rawText,
-        tone,
-        focus,
-        platform,
-        language,
-        endpoint,
-        apiKey,
-        model
-      );
-      flashStatus("Used local rewrite (no API key set)", "idle", 2600);
-    }
+    const optimized = await optimizeWithAnthropic(
+      rawText,
+      tone,
+      focus,
+      platform,
+      language,
+      "",
+      "",
+      ""
+    );
     outputEl.value = optimized;
     copyLabelEl.textContent = "Copy optimized text";
   } catch (err) {
     console.error(err);
-    flashStatus("Something went wrong while optimizing", "error", 3500);
+    outputEl.value = localRewrite(rawText, tone, focus);
+    flashStatus("AI request failed — used local rewrite", "error", 3500);
   } finally {
     setLoading(false);
   }
@@ -338,23 +333,12 @@ async function optimizeSingleDescription(rawText) {
   const focus = focusEl.value;
   const platform = platformEl ? platformEl.value : "generic";
   const language = languageEl ? languageEl.value : "en";
-  const endpoint = apiEndpointEl ? apiEndpointEl.value.trim() : "";
-  const model = apiModelEl ? apiModelEl.value.trim() : "";
-  const apiKey = apiKeyEl ? apiKeyEl.value.trim() : "";
-
-  if (apiKey) {
-    return optimizeWithAnthropic(
-      rawText,
-      tone,
-      focus,
-      platform,
-      language,
-      endpoint,
-      apiKey,
-      model
-    );
+  try {
+    return await optimizeWithAnthropic(rawText, tone, focus, platform, language, "", "", "");
+  } catch (err) {
+    console.error(err);
+    return localRewrite(rawText, tone, focus);
   }
-  return localRewrite(rawText, tone, focus);
 }
 
 function parseCsvSimple(text) {
@@ -537,7 +521,7 @@ inputEl.addEventListener("keydown", (e) => {
 document.addEventListener("DOMContentLoaded", () => {
   loadSettings();
   if (apiProviderEl && !apiProviderEl.value) apiProviderEl.value = "anthropic";
-  if (apiEndpointEl && !apiEndpointEl.value) apiEndpointEl.value = "http://localhost:4000/anthropic";
+  if (apiEndpointEl && !apiEndpointEl.value) apiEndpointEl.value = "/api/anthropic";
   if (apiModelEl && !apiModelEl.value) apiModelEl.value = "claude-haiku-4-5-20251001";
   setStatus("Ready", "idle");
 });
