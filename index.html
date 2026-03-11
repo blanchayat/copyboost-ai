@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CopyBoost AI – Product Description Optimizer</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="logo">
+        <div class="logo-mark">AI</div>
+        <div class="logo-text">
+          <span class="logo-title">CopyBoost AI</span>
+          <span class="logo-subtitle">Optimize your product descriptions with AI in seconds.</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="card">
+        <div class="card-header">
+          <h1>Turn plain product copy into high‑converting descriptions</h1>
+          <p>Optimize your product descriptions with AI in seconds—clear, persuasive, and ready to paste into your store.</p>
+        </div>
+
+        <div class="settings">
+          <div class="field">
+            <label for="platform">Platform</label>
+            <select id="platform">
+              <option value="generic">Generic product page</option>
+              <option value="trendyol">Trendyol</option>
+              <option value="amazon">Amazon</option>
+              <option value="shopify">Shopify</option>
+              <option value="temu">Temu</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tone">Tone</label>
+            <select id="tone">
+              <option value="default">Balanced & professional</option>
+              <option value="friendly">Friendly & conversational</option>
+              <option value="luxury">Premium & luxurious</option>
+              <option value="energetic">Bold & energetic</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="focus">Primary focus</label>
+            <select id="focus">
+              <option value="balanced">Balanced (conversion + SEO)</option>
+              <option value="conversion">Conversion-focused</option>
+              <option value="seo">SEO-focused</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="language">Language</label>
+            <select id="language">
+              <option value="en">English</option>
+              <option value="tr">Türkçe</option>
+              <option value="de">Deutsch</option>
+            </select>
+          </div>
+          <div class="field api-key-field">
+            <label for="api-key">Claude API key</label>
+            <input
+              id="api-key"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Paste your Anthropic API key (sk-ant-...)"
+            />
+            <div class="api-inline-actions">
+              <button id="save-api-btn" class="btn tiny secondary-inline" type="button">Save locally</button>
+              <span class="api-inline-hint">Stored only in this browser (localStorage).</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="panel">
+            <div class="panel-header">
+              <span>Original description</span>
+              <span class="panel-subtitle">Paste from your store or PIM</span>
+            </div>
+            <textarea
+              id="input-text"
+              placeholder="Paste your current product description here..."
+            ></textarea>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <span>AI‑optimized description</span>
+              <span id="status-label" class="status-label status-idle">Ready</span>
+            </div>
+            <textarea
+              id="output-text"
+              placeholder="Your optimized description will appear here..."
+              readonly
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="actions">
+          <div class="left-actions">
+            <button id="optimize-btn" class="btn primary">
+              <span class="btn-spinner" aria-hidden="true"></span>
+              <span class="btn-label">Optimize with AI</span>
+            </button>
+            <button id="clear-btn" class="btn ghost">Clear</button>
+          </div>
+          <div class="right-actions">
+            <button id="copy-btn" class="btn secondary">
+              <span id="copy-label">Copy optimized text</span>
+            </button>
+          </div>
+        </div>
+
+        <section class="bulk-card">
+          <div class="bulk-header">
+            <div>
+              <h2>Bulk optimize with CSV</h2>
+              <p>Upload a CSV of products and download AI-optimized descriptions for your chosen platform and language.</p>
+            </div>
+          </div>
+          <div class="bulk-body">
+            <div class="field">
+              <label for="csv-input">CSV file (UTF-8)</label>
+              <input id="csv-input" type="file" accept=".csv" />
+              <p class="bulk-hint">
+                Expected columns: <code>id</code> (optional), <code>name</code> (optional), <code>description</code> (recommended).
+                If <code>description</code> is missing, CopyBoost AI will treat everything after the first comma as the description.
+              </p>
+            </div>
+            <div class="bulk-actions">
+              <button id="process-csv-btn" class="btn ghost">Optimize CSV with AI</button>
+              <button id="download-csv-btn" class="btn secondary" disabled>Download optimized CSV</button>
+            </div>
+            <p id="csv-status" class="bulk-status">No CSV processed yet.</p>
+          </div>
+        </section>
+
+        <details class="api-details" open>
+          <summary>Advanced API settings</summary>
+          <p class="api-help">
+            Default is Claude (Anthropic) via <code>/v1/messages</code>. Optionally override endpoint/model.
+            If no key is set, the app uses a local rewrite (no external calls).
+          </p>
+          <div class="api-grid">
+            <div class="field">
+              <label for="api-provider">Provider</label>
+              <select id="api-provider">
+                <option value="anthropic">Anthropic (Claude)</option>
+              </select>
+            </div>
+            <div class="field full-width">
+              <label for="api-endpoint">Endpoint URL</label>
+              <input
+                id="api-endpoint"
+                type="url"
+                placeholder="http://localhost:4000/anthropic"
+              />
+            </div>
+            <div class="field full-width">
+              <label for="api-model">Model</label>
+              <input
+                id="api-model"
+                type="text"
+                placeholder="claude-sonnet-4-5"
+              />
+            </div>
+          </div>
+          <p class="api-note">
+            Note: calling Anthropic directly from a browser may be blocked by CORS. For production, proxy via your backend.
+          </p>
+        </details>
+      </section>
+
+      <footer class="footer">
+        <span>CopyBoost AI.</span>
+        <span class="divider">•</span>
+        <span>Built by Nurhayat Yılmaz · AI Automation Specialist.</span>
+      </footer>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
