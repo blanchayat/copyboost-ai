@@ -323,8 +323,6 @@ async function handleOptimizeClick() {
         apiKey,
         model
       );
-    } else {
-      optimized = localRewrite(rawText, tone, focus);
       flashStatus("Used local rewrite (no API key set)", "idle", 2600);
     }
     outputEl.value = optimized;
