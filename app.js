@@ -311,9 +311,7 @@ async function handleOptimizeClick() {
   outputEl.value = "";
 
   try {
-    let optimized;
-    if (apiKey) {
-      optimized = await optimizeWithAnthropic(
+    let optimized = await optimizeWithAnthropic(
         rawText,
         tone,
         focus,
